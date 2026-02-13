@@ -49,15 +49,24 @@ $(document).ready(async function () {
     });
   });
 
-  // Handle form submissions
+  // Handle form submissions — always prevent Webflow's default form handler
   $('[data-form="validate"]').each(function () {
     $(this).on('submit', function (e) {
-      const emailInput = $(this).find('[data-validate="work-email"]');
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const form = $(this);
+      const emailInput = form.find('[data-validate="work-email"]');
       const email = emailInput.val().trim().toLowerCase();
 
       if (!isValidEmail(email)) {
-        e.preventDefault();
         return false;
+      }
+
+      // Redirect to the URL specified in data-redirect, passing the email
+      const redirect = form.attr('data-redirect');
+      if (redirect) {
+        window.location.href = redirect + '?email=' + encodeURIComponent(email);
       }
     });
   });

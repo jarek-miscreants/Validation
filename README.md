@@ -23,6 +23,7 @@ The script uses only custom data attributes — no CSS classes required for func
 | Element | Attribute | Value | Purpose |
 |---------|-----------|-------|---------|
 | Form | `data-form` | `validate` | Identifies forms to validate on submit |
+| Form | `data-redirect` | URL path (e.g. `/meet/pixee`) | Redirect destination after successful validation. The email is appended as `?email=...` |
 | Email input | `data-validate` | `work-email` | Identifies email fields to validate on input |
 | Error message | `data-validate` | `error` | Identifies the error text element (must be a **sibling** of the input) |
 
@@ -91,7 +92,7 @@ Or use the raw GitHub URL:
 Reference of what Webflow generates with the attributes applied:
 
 ```html
-<form data-form="validate">
+<form data-form="validate" data-redirect="/meet/pixee">
   <input
     type="email"
     data-validate="work-email"
@@ -106,6 +107,7 @@ Reference of what Webflow generates with the attributes applied:
 
 ```
 data-form="validate"        → on the <form>
+data-redirect="/meet/pixee" → on the <form> (redirect URL after valid submit)
 data-validate="work-email"  → on the email <input>
 data-validate="error"       → on the error <div> or <span> (sibling of input)
 data-invalid                → auto-added/removed by script (use in CSS selectors)
@@ -119,7 +121,9 @@ data-invalid                → auto-added/removed by script (use in CSS selecto
    - Checks if the domain is on the blocklist
 3. If invalid: adds `data-invalid` to the input and shows the sibling `[data-validate="error"]` element
 4. If valid: removes `data-invalid` and hides the error
-5. On form submit: blocks submission if the email is invalid
+5. On form submit: **always prevents Webflow's default submission** (no data sent to Webflow)
+6. If invalid: blocks submission entirely
+7. If valid: redirects to the URL in `data-redirect` with `?email=` appended
 
 ## Updating the Blocklist
 
